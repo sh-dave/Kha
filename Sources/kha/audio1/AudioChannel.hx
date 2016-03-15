@@ -6,7 +6,7 @@ interface AudioChannel {
 	public function stop(): Void;
 	public var length(get, null): Float; // Seconds
 	private function get_length(): Float;
-	public var position(get, null): Float; // Seconds
+	public var position(get, set): Float; // Seconds
 	private function get_position(): Float;
 	public var volume(get, set): Float;
 	private function get_volume(): Float;

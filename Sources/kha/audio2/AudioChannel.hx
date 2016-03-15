@@ -8,13 +8,13 @@ class AudioChannel implements kha.audio1.AudioChannel {
 	private var myPosition: Int;
 	private var paused: Bool = false;
 	private var looping: Bool;
-	
+
 	public function new(looping: Bool) {
 		this.looping = looping;
 		myVolume = 1;
 		myPosition = 0;
 	}
-	
+
 	public function nextSamples(samples: Vector<FastFloat>, length: Int, sampleRate: Int): Void {
 		if (paused) {
 			for (i in 0...length) {
@@ -22,7 +22,7 @@ class AudioChannel implements kha.audio1.AudioChannel {
 			}
 			return;
 		}
-		
+
 		for (i in 0...length) {
 			if (myPosition >= data.length && looping) {
 				myPosition = 0;
@@ -31,7 +31,7 @@ class AudioChannel implements kha.audio1.AudioChannel {
 			++myPosition;
 		}
 	}
-	
+
 	public function play(): Void {
 		paused = false;
 	}
@@ -45,19 +45,23 @@ class AudioChannel implements kha.audio1.AudioChannel {
 	}
 
 	public var length(get, null): Float; // Seconds
-	
+
 	private function get_length(): Float {
 		return data.length / 44100 / 2; // 44.1 khz in stereo
 	}
 
-	public var position(get, null): Float; // Seconds
-	
+	public var position(get, set): Float; // Seconds
+
 	private function get_position(): Float {
 		return myPosition / 44100 / 2;
 	}
-	
+
+	function set_position( value : Float ) : Float {
+		return myPosition = Std.int(value * 44100 * 2);
+	}
+
 	public var volume(get, set): Float;
-	
+
 	private function get_volume(): Float {
 		return myVolume;
 	}
