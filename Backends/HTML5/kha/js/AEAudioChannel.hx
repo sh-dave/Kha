@@ -5,11 +5,11 @@ import kha.audio1.AudioChannel;
 
 class AEAudioChannel implements kha.audio1.AudioChannel {
 	private var element: AudioElement;
-	
+
 	public function new(sound: Sound) {
 		this.element = sound.element;
 	}
-	
+
 	public function play(): Void {
 		element.play();
 	}
@@ -34,7 +34,7 @@ class AEAudioChannel implements kha.audio1.AudioChannel {
 	}
 
 	public var length(get, null): Float; // Seconds
-	
+
 	private function get_length(): Float {
 		if (Math.isFinite(element.duration)) {
 			return element.duration;
@@ -44,10 +44,14 @@ class AEAudioChannel implements kha.audio1.AudioChannel {
 		}
 	}
 
-	public var position(get, null): Float; // Seconds
-	
+	public var position(get, set): Float; // Seconds
+
 	private function get_position(): Float {
 		return element.currentTime;
+	}
+
+	function set_position( value : Float ) : Float {
+		return element.currentTime = value;
 	}
 
 	public var volume(get, set): Float;
