@@ -1,10 +1,10 @@
 package kha;
 
-import flash.utils.ByteArray;
-import haxe.io.Bytes;
-import kha.DepthStencilFormat;
 import kha.graphics4.TextureFormat;
+import kha.graphics4.DepthStencilFormat;
 import kha.graphics4.Usage;
+import haxe.io.Bytes;
+import flash.utils.ByteArray;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
@@ -174,8 +174,8 @@ class Image implements Canvas implements Resource {
 					bytes = Bytes.alloc(texWidth * texHeight);
 				case RGBA128:
 					bytes = Bytes.alloc(texWidth * texHeight * 16);
-				case DEPTH16:
-					bytes = Bytes.alloc(texWidth * texHeight * 2);
+				default:
+					bytes = Bytes.alloc(texWidth * texHeight * 4);
 			}
 		}
 		return bytes;
@@ -207,6 +207,7 @@ class Image implements Canvas implements Resource {
 				}
 				tex.uploadFromByteArray(rgbaBytes.getData(), 0);
 			case RGBA32:
+				tex.uploadFromByteArray(bytes.getData(), 0);
 			default:
 				tex.uploadFromByteArray(bytes.getData(), 0);
 		}
