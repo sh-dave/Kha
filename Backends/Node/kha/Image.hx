@@ -30,7 +30,7 @@ class Image implements Canvas implements Resource {
 		return new Image(width, height, format);
 	}
 	
-	public static function createRenderTarget(width: Int, height: Int, format: TextureFormat = null, depthStencil: Bool = false, antiAliasingSamples: Int = 1): Image {
+	public static function createRenderTarget(width: Int, height: Int, format: TextureFormat = null, depthStencil: kha.graphics4.DepthStencilFormat = kha.graphics4.DepthStencilFormat.NoDepthAndStencil, antiAliasingSamples: Int = 1, contextId: Int = 0): Image {
 		return new Image(width, height, format);
 	}
 	
