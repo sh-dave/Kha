@@ -51,8 +51,9 @@ class ImageShaderPainter {
 	public var sourceBlend: BlendingFactor = BlendingFactor.Undefined;
 	public var destinationBlend: BlendingFactor = BlendingFactor.Undefined;
 	
-	public function new(g4: Graphics) {
+	public function new(g4: Graphics, pm: FastMatrix4) {
 		this.g = g4;
+		this.projectionMatrix = pm;
 		bufferIndex = 0;
 		initShaders();
 		initBuffers();
@@ -74,10 +75,6 @@ class ImageShaderPainter {
 			textureLocation = pipe.getTextureUnit("tex");
 		}
 		return myPipeline = pipe;
-	}
-	
-	public function setProjection(projectionMatrix: FastMatrix4): Void {
-		this.projectionMatrix = projectionMatrix;
 	}
 	
 	private static function initShaders(): Void {
@@ -288,8 +285,9 @@ class ColoredShaderPainter {
 	public var sourceBlend: BlendingFactor = BlendingFactor.Undefined;
 	public var destinationBlend: BlendingFactor = BlendingFactor.Undefined;
 	
-	public function new(g4: Graphics) {
+	public function new(g4: Graphics, pm: FastMatrix4) {
 		this.g = g4;
+		this.projectionMatrix = pm;
 		bufferIndex = 0;
 		triangleBufferIndex = 0;
 		initShaders();
@@ -309,10 +307,6 @@ class ColoredShaderPainter {
 			projectionLocation = pipe.getConstantLocation("projectionMatrix");
 		}
 		return myPipeline = pipe;
-	}
-	
-	public function setProjection(projectionMatrix: FastMatrix4): Void {
-		this.projectionMatrix = projectionMatrix;
 	}
 	
 	private static function initShaders(): Void {
@@ -550,8 +544,9 @@ class TextShaderPainter {
 	public var sourceBlend: BlendingFactor = BlendingFactor.Undefined;
 	public var destinationBlend: BlendingFactor = BlendingFactor.Undefined;
 	
-	public function new(g4: Graphics) {
+	public function new(g4: Graphics, pm: FastMatrix4) {
 		this.g = g4;
+		this.projectionMatrix = pm;
 		bufferIndex = 0;
 		initShaders();
 		initBuffers();
@@ -573,10 +568,6 @@ class TextShaderPainter {
 			textureLocation = pipe.getTextureUnit("tex");
 		}
 		return myPipeline = pipe;
-	}
-	
-	public function setProjection(projectionMatrix: FastMatrix4): Void {
-		this.projectionMatrix = projectionMatrix;
 	}
 	
 	private static function initShaders(): Void {
@@ -817,7 +808,7 @@ class TextShaderPainter {
 class Graphics2 extends kha.graphics2.Graphics {
 	private var myColor: Color;
 	private var myFont: Font;
-	private var projectionMatrix: FastMatrix4;
+	private var projectionMatrix = FastMatrix4.identity();
 	public var imagePainter: ImageShaderPainter;
 	private var coloredPainter: ColoredShaderPainter;
 	private var textPainter: TextShaderPainter;
@@ -830,9 +821,9 @@ class Graphics2 extends kha.graphics2.Graphics {
 		color = Color.White;
 		this.canvas = canvas;
 		g = canvas.g4;
-		imagePainter = new ImageShaderPainter(g);
-		coloredPainter = new ColoredShaderPainter(g);
-		textPainter = new TextShaderPainter(g);
+		imagePainter = new ImageShaderPainter(g, projectionMatrix);
+		coloredPainter = new ColoredShaderPainter(g, projectionMatrix);
+		textPainter = new TextShaderPainter(g, projectionMatrix);
 		textPainter.fontSize = fontSize;
 		setProjection();
 		
@@ -866,21 +857,18 @@ class Graphics2 extends kha.graphics2.Graphics {
 		var width = canvas.width;
 		var height = canvas.height;
 		if (Std.is(canvas, Framebuffer)) {
-			projectionMatrix = FastMatrix4.orthogonalProjection(0, width, height, 0, 0.1, 1000);
+			projectionMatrix.setFrom(FastMatrix4.orthogonalProjection(0, width, height, 0, 0.1, 1000));
 		} else {
 			if (!Image.nonPow2Supported) {
 				width = upperPowerOfTwo(width);
 				height = upperPowerOfTwo(height);
 			}
 			if (g.renderTargetsInvertedY()) {
-				projectionMatrix = FastMatrix4.orthogonalProjection(0, width, 0, height, 0.1, 1000);
+				projectionMatrix.setFrom(FastMatrix4.orthogonalProjection(0, width, 0, height, 0.1, 1000));
 			} else {
-				projectionMatrix = FastMatrix4.orthogonalProjection(0, width, height, 0, 0.1, 1000);
+				projectionMatrix.setFrom(FastMatrix4.orthogonalProjection(0, width, height, 0, 0.1, 1000));
 			}
 		}
-		imagePainter.setProjection(projectionMatrix);
-		coloredPainter.setProjection(projectionMatrix);
-		textPainter.setProjection(projectionMatrix);
 	}
 	
 	#if cpp
