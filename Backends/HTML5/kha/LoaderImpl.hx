@@ -22,14 +22,14 @@ class LoaderImpl {
 	public static function getImageFormats(): Array<String> {
 		return ["png", "jpg", "hdr"];
 	}
-	
-	public static function loadImageFromDescription(desc: Dynamic, done: kha.Image -> Void) {
+
+	public static function loadImageFromDescription(desc: Dynamic, done: kha.Image -> Void, failed: Dynamic -> Void) {
 		var readable = Reflect.hasField(desc, "readable") ? desc.readable : false;
 		if (StringTools.endsWith(desc.files[0], ".hdr")) {
 			loadBlobFromDescription(desc, function(blob) {
 				var hdrImage = kha.internal.HdrFormat.parse(blob.toBytes());
 				done(Image.fromBytes(hdrImage.data.view.buffer, hdrImage.width, hdrImage.height, TextureFormat.RGBA128, readable ? Usage.DynamicUsage : Usage.StaticUsage));
-			});
+			}, failed);
 		}
 		else {
 			var img: ImageElement = cast Browser.document.createElement("img");
@@ -40,7 +40,7 @@ class LoaderImpl {
 			img.crossOrigin = "";
 		}
 	}
-	
+
 	public static function getSoundFormats(): Array<String> {
 		var element = Browser.document.createAudioElement();
 		var formats = new Array<String>();
@@ -50,8 +50,8 @@ class LoaderImpl {
 		if (SystemImpl._hasWebAudio || element.canPlayType("audio/ogg") != "") formats.push("ogg");
 		return formats;
 	}
-	
-	public static function loadSoundFromDescription(desc: Dynamic, done: kha.Sound -> Void) {
+
+	public static function loadSoundFromDescription(desc: Dynamic, done: kha.Sound -> Void, failed: Dynamic -> Void) {
 		if (SystemImpl._hasWebAudio) {
 			var element = Browser.document.createAudioElement();
 			#if !sys_debug_html5
@@ -96,7 +96,7 @@ class LoaderImpl {
 			new kha.js.Sound(desc.files, done);
 		}
 	}
-	
+
 	public static function getVideoFormats(): Array<String> {
 		#if sys_debug_html5
 		return ["webm"];
@@ -105,11 +105,11 @@ class LoaderImpl {
 		#end
 	}
 
-	public static function loadVideoFromDescription(desc: Dynamic, done: kha.Video -> Void): Void {
+	public static function loadVideoFromDescription(desc: Dynamic, done: kha.Video -> Void, failed: Dynamic -> Void): Void {
 		kha.js.Video.fromFile(desc.files, done);
 	}
-    
-	public static function loadBlobFromDescription(desc: Dynamic, done: Blob -> Void) {
+
+	public static function loadBlobFromDescription(desc: Dynamic, done: Blob -> Void, failed: Dynamic -> Void) {
 		#if sys_debug_html5
 		var fs = untyped __js__("require('fs')");
         var path = untyped __js__("require('path')");
@@ -125,7 +125,7 @@ class LoaderImpl {
 		var request = untyped new XMLHttpRequest();
 		request.open("GET", desc.files[0], true);
 		request.responseType = "arraybuffer";
-		
+
 		request.onreadystatechange = function() {
 			if (request.readyState != 4) return;
 			if ((request.status >= 200 && request.status < 400) ||
@@ -155,13 +155,13 @@ class LoaderImpl {
 		request.send(null);
 		#end
 	}
-	
-	public static function loadFontFromDescription(desc: Dynamic, done: Font -> Void): Void {
+
+	public static function loadFontFromDescription(desc: Dynamic, done: Font -> Void, failed: Dynamic -> Void): Void {
 		loadBlobFromDescription(desc, function (blob: Blob) {
 			done(new Font(blob));
-		});
+		}, failed);
 	}
-	
+
 	/*override public function loadURL(url: String): Void {
 		// inDAgo hack
 		if (url.substr(0, 1) == '#')
@@ -169,7 +169,7 @@ class LoaderImpl {
 		else
 			Browser.window.open(url, "Kha");
 	}
-	
+
 	override public function setNormalCursor() {
 		Mouse.SystemCursor = "default";
 		Mouse.UpdateSystemCursor();
