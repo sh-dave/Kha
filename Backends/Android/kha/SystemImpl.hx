@@ -307,4 +307,8 @@ class SystemImpl {
 	public static function getGamepadId(index: Int): String {
 		return "unkown";
 	}
+
+	public static function getPen(index: Int): kha.input.Pen {
+		return null;
+	}
 }
