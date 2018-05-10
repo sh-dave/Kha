@@ -12,4 +12,8 @@ class FragmentShader {
 		this.type = GLES20.GL_FRAGMENT_SHADER;
 		this.shader = -1;
 	}
+
+	public static function fromSource( code: String ) : FragmentShader {
+		throw 'FragmentShader.fromSource is not implemented';
+	}	
 }

@@ -12,4 +12,8 @@ class VertexShader {
 		this.type = GLES20.GL_VERTEX_SHADER;
 		this.shader = -1;
 	}
+
+	public static function fromSource( code: String ) : VertexShader {
+		throw 'VertexShader.fromSource is not implemented';
+	}		
 }
