@@ -24,6 +24,10 @@ class IndexBuffer {
 		data = ByteBuffer.allocateDirect(indexCount * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 	}
 	
+	public function delete() {
+		// TODO implement me
+	}
+	
 	private static function createBuffer(): Int {
 		var buffers = new NativeArray<Int>(1);
 		GLES20.glGenBuffers(1, buffers, 0);
