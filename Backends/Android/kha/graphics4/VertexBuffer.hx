@@ -19,7 +19,7 @@ class VertexBuffer {
 	private var offsets: Array<Int>;
 	private var usage: Usage;
 	
-	public function new(vertexCount: Int, structure: VertexStructure, usage: Usage, canRead: Bool = false) {
+	public function new(vertexCount: Int, structure: VertexStructure, usage: Usage, instanceDataStepRate: Int = 0, canRead: Bool = false) {
 		this.usage = usage;
 		mySize = vertexCount;
 		myStride = 0;
@@ -80,6 +80,10 @@ class VertexBuffer {
 		}
 	}
 	
+	public function delete() {
+		// TODO implement me
+	}
+
 	private static function createBuffer(): Int {
 		var buffers = new NativeArray<Int>(1);
 		GLES20.glGenBuffers(1, buffers, 0);
