@@ -21,6 +21,13 @@ class PipelineState extends PipelineStateBase {
 		textureValues = new Array<Dynamic>();
 	}
 	
+	public function delete() {
+		if (program >= 0) {
+			GLES20.glDeleteProgram(program);
+			program = -1;
+		}
+	}
+
 	public function compile(): Void {
 		compileShader(vertexShader);
 		compileShader(fragmentShader);
