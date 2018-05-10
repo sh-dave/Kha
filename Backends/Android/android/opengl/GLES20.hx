@@ -117,6 +117,7 @@ extern class GLES20 {
 	public static function glLinkProgram(program : Int) : Void;
 	public static function glUseProgram(program : Int) : Void;
 	public static function glCreateProgram() : Int;
+	public static function glDeleteProgram(program: Int) : Void;
 	public static function glEnable(state : Int) : Void;
 	public static function glShaderSource(shader : Int, source : String) : Void;
 	public static function glCompileShader(shader : Int) : Void;
