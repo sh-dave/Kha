@@ -13,7 +13,9 @@ class VertexShader {
 		this.shader = -1;
 	}
 
-	public static function fromSource( code: String ) : VertexShader {
-		throw 'VertexShader.fromSource is not implemented';
+	public static function fromSource(code: String) : VertexShader {
+		var shader = new VertexShader([], ["runtime-string"]);
+		shader.source = code;
+		return shader;
 	}		
 }

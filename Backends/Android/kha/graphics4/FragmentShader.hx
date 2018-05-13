@@ -13,7 +13,9 @@ class FragmentShader {
 		this.shader = -1;
 	}
 
-	public static function fromSource( code: String ) : FragmentShader {
-		throw 'FragmentShader.fromSource is not implemented';
+	public static function fromSource(code: String) : FragmentShader {
+		var shader = new FragmentShader([], ["runtime-string"]);
+		shader.source = code;
+		return shader;
 	}	
 }
