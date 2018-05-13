@@ -17,5 +17,5 @@ class FragmentShader {
 		var shader = new FragmentShader([], ["runtime-string"]);
 		shader.source = code;
 		return shader;
-	}	
+	}
 }

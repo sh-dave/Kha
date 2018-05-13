@@ -17,5 +17,5 @@ class VertexShader {
 		var shader = new VertexShader([], ["runtime-string"]);
 		shader.source = code;
 		return shader;
-	}		
+	}
 }
