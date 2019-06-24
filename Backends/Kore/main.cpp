@@ -232,11 +232,12 @@ namespace {
 	void mix(int samples) {
 		using namespace Kore;
 
+		int t0 = 99;
 #ifdef KORE_MULTITHREADED_AUDIO
 		if (!mixThreadregistered) {
-			HX_TOP_OF_STACK
+			hx::SetTopOfStack(&t0, true);
 			mixThreadregistered = true;
-			threadSleep(100);
+			//threadSleep(100);
 		}
 #endif
 		//int addr = 0;
@@ -327,12 +328,14 @@ void post_kore_init() {
 
 void run_kore() {
 	Kore::log(Kore::Info, "Starting application");
+	Kore::threadsInit();
 	Kore::Audio2::audioCallback = mix;
 	Kore::Audio2::init();
 	::kha::audio2::Audio_obj::samplesPerSecond = Kore::Audio2::samplesPerSecond;
 	Kore::System::start();
 	Kore::log(Kore::Info, "Application stopped");
 #if !defined(KORE_XBOX_ONE) && !defined(KORE_TIZEN) && !defined(KORE_HTML5)
+	Kore::threadsQuit();
 	Kore::System::stop();
 #endif
 }
@@ -341,7 +344,7 @@ extern "C" void __hxcpp_main();
 extern int _hxcpp_argc;
 extern char **_hxcpp_argv;
 
-int kore(int argc, char **argv) {
+int kickstart(int argc, char **argv) {
 	_hxcpp_argc = argc;
 	_hxcpp_argv = argv;
 	HX_TOP_OF_STACK

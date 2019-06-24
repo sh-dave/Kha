@@ -365,6 +365,10 @@ class SystemImpl {
 		return "java";
 	}
 
+	public static function vibrate(ms:Int): Void {
+
+	}
+
 	public static function getLanguage(): String {
 		return java.util.Locale.getDefault().getLanguage();
 	}
@@ -448,5 +452,9 @@ class SystemImpl {
 
 	public static function loadUrl(url: String): Void {
 
+	}
+
+	public static function safeZone(): Float {
+		return 1.0;
 	}
 }

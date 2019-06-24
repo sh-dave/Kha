@@ -440,6 +440,10 @@ class SystemImpl {
 		return "WPF";
 	}
 
+	public static function vibrate(ms:Int): Void {
+
+	}
+
 	public static function getLanguage(): String {
 		var id = cs.system.globalization.CultureInfo.CurrentCulture.Name;
 		return ~/-/.replace(id, "_");
@@ -490,5 +494,9 @@ class SystemImpl {
 
 	public static function getGamepadId(index: Int): String {
 		return "unkown";
+	}
+
+	public static function safeZone(): Float {
+		return 1.0;
 	}
 }

@@ -78,7 +78,7 @@ class SystemImpl {
 	public static function windowHeight(windowId: Int): Int {
 		return untyped __cpp__('Kore::System::windowHeight(windowId)');
 	}
-	
+
 	public static function screenDpi(): Int {
 		return untyped __cpp__('Kore::Display::primary()->pixelsPerInch()');
 	}
@@ -99,9 +99,14 @@ class SystemImpl {
 	public static function getSystemId(): String {
 		return '';
 	}
-	
+
+	public static function vibrate(ms:Int): Void {
+		untyped __cpp__("Kore::System::vibrate(ms)");
+	}
+
+	@:functionCode('return ::String(Kore::System::language());')
 	public static function getLanguage(): String {
-		return "en"; //TODO: Implement
+		return "en";
 	}
 
 	public static function requestShutdown(): Bool {
@@ -124,7 +129,7 @@ class SystemImpl {
 		initKore(options.title, options.width, options.height, options.window, options.framebuffer);
 		Window._init();
 
-		kha.Worker._mainThread = cpp.vm.Thread.current();
+		kha.Worker._mainThread = sys.thread.Thread.current();
 
 		untyped __cpp__('post_kore_init()');
 
@@ -132,10 +137,10 @@ class SystemImpl {
 
 #if (!VR_GEAR_VR && !VR_RIFT)
 		var g4 = new kha.kore.graphics4.Graphics();
-    g4.window = 0;
-		var g5 = new kha.kore.graphics5.Graphics();
-		var framebuffer = new Framebuffer(0, null, null, g4, g5);
-		framebuffer.init(new kha.graphics2.Graphics1(framebuffer), new kha.kore.graphics4.Graphics2(framebuffer), g4, g5);
+		g4.window = 0;
+		//var g5 = new kha.kore.graphics5.Graphics();
+		var framebuffer = new Framebuffer(0, null, null, g4 /*, g5*/);
+		framebuffer.init(new kha.graphics2.Graphics1(framebuffer), new kha.kore.graphics4.Graphics2(framebuffer), g4/*, g5*/);
 		framebuffers.push(framebuffer);
 #end
 
@@ -314,7 +319,7 @@ class SystemImpl {
 	public static function mouseWheel(windowId: Int, delta: Int): Void {
 		mouse.sendWheelEvent(windowId, delta);
 	}
-	
+
 	public static function mouseLeave(windowId: Int): Void {
 		mouse.sendLeaveEvent(windowId);
 	}
@@ -398,7 +403,7 @@ class SystemImpl {
 	public static function dropFiles(filePath: String): Void {
 		System.dropFiles(filePath);
 	}
-	
+
 	public static function copy(): String {
 		if (System.copyListener != null) {
 			return System.copyListener();
@@ -407,7 +412,7 @@ class SystemImpl {
 			return null;
 		}
 	}
-	
+
 	public static function cut(): String {
 		if (System.cutListener != null) {
 			return System.cutListener();
@@ -416,7 +421,7 @@ class SystemImpl {
 			return null;
 		}
 	}
-	
+
 	public static function paste(data: String): Void {
 		if (System.pasteListener != null) {
 			System.pasteListener(data);
@@ -429,13 +434,13 @@ class SystemImpl {
 		init_kore(name, width, height, &window, &framebuffer);
 	')
 	private static function initKore(name: String, width: Int, height: Int, win: WindowOptions, frame: FramebufferOptions): Void {
-		
+
 	}
-	
+
 	public static function setKeepScreenOn(on: Bool): Void {
 		untyped __cpp__("Kore::System::setKeepScreenOn(on)");
 	}
-	
+
 	public static function loadUrl(url: String): Void {
 		untyped __cpp__("Kore::System::loadURL(url)");
 	}
@@ -443,5 +448,9 @@ class SystemImpl {
 	@:functionCode('return ::String(::getGamepadId(index));')
 	public static function getGamepadId(index: Int): String {
 		return "unknown";
+	}
+
+	public static function safeZone(): Float {
+		return untyped __cpp__('Kore::System::safeZone()');
 	}
 }
