@@ -622,11 +622,17 @@ class SystemImpl {
 			}
 
 			if (context != null) {
-				context.resume().then(function(c) {
-					soundEnabled = true;
-				}).catchError(function(err) {
-					trace(err);
-				});
+				switch context.state {
+					case CLOSED:
+					case RUNNING:
+						soundEnabled = true;
+					case SUSPENDED:
+						context.resume().then(function(c) {
+							soundEnabled = true;
+						}).catchError(function(err) {
+							trace(err);
+						});
+				}
 			}
 
 			kha.audio2.Audio.wakeChannels();

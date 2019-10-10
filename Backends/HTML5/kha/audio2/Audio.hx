@@ -34,6 +34,7 @@ class Audio {
 	private static function initContext(): Void {
 		try {
 			_context = new AudioContext();
+			_context.suspend();
 			_globalGain = _context.createGain();
 			_globalGain.connect(_context.destination);
 			return;
@@ -61,30 +62,41 @@ class Audio {
 		var bufferSize = 1024 * 2;
 		buffer = new Buffer(bufferSize * 4, 2, Std.int(_context.sampleRate));
 
-		processingNode = _context.createScriptProcessor(bufferSize, 0, 2);
-		processingNode.onaudioprocess = function (e: AudioProcessingEvent) {
-			var output1 = e.outputBuffer.getChannelData(0);
-			var output2 = e.outputBuffer.getChannelData(1);
-			if (audioCallback != null) {
-				audioCallback(e.outputBuffer.length * 2, buffer);
-				for (i in 0...e.outputBuffer.length) {
-					output1[i] = buffer.data.get(buffer.readLocation);
-					buffer.readLocation += 1;
-					output2[i] = buffer.data.get(buffer.readLocation);
-					buffer.readLocation += 1;
-					if (buffer.readLocation >= buffer.size) {
-						buffer.readLocation = 0;
+		_context.onstatechange = function() {
+			switch _context.state {
+				case CLOSED:
+					// TODO (DK) set `processingNode = null` to recreate it later?
+				case RUNNING:
+					if (processingNode == null) {
+						processingNode = _context.createScriptProcessor(bufferSize, 0, 2);
+						processingNode.onaudioprocess = function (e: AudioProcessingEvent) {
+							var output1 = e.outputBuffer.getChannelData(0);
+							var output2 = e.outputBuffer.getChannelData(1);
+							if (audioCallback != null) {
+								audioCallback(e.outputBuffer.length * 2, buffer);
+								for (i in 0...e.outputBuffer.length) {
+									output1[i] = buffer.data.get(buffer.readLocation);
+									buffer.readLocation += 1;
+									output2[i] = buffer.data.get(buffer.readLocation);
+									buffer.readLocation += 1;
+									if (buffer.readLocation >= buffer.size) {
+										buffer.readLocation = 0;
+									}
+								}
+							}
+							else {
+								for (i in 0...e.outputBuffer.length) {
+									output1[i] = 0;
+									output2[i] = 0;
+								}
+							}
+						}
+						processingNode.connect(_globalGain);
 					}
-				}
-			}
-			else {
-				for (i in 0...e.outputBuffer.length) {
-					output1[i] = 0;
-					output2[i] = 0;
-				}
+				case SUSPENDED:
 			}
 		}
-		processingNode.connect(_globalGain);
+
 		return true;
 	}
 
